@@ -1,8 +1,9 @@
 require 'spec_helper'
+require 'sisyphus'
 require 'sisyphus/commands/server_command'
 module Sisyphus::Commands
 	describe ServerCommand do
-		describe "#handle_options", :current => true do
+		describe "#handle_options" do
 			#subject { cmd.handle_options args}
 			let(:cmd){ ServerCommand.new }
 			let(:args){ ["-h", "--port", "#{port}", "--title", title, "--print-timeout", "#{timeout}"] }
@@ -31,7 +32,7 @@ module Sisyphus::Commands
 				allow(Sisyphus).to receive(:open_command).and_return('ooopen')
 			end
 
-			context "with option", :current => true do
+			context "with option" do
 				let(:options) { {:title => title, :print_timeout => timeout, :port => port, :bind => bind} }
 				let(:title){ 'Dream of HACTO' }
 				let(:timeout){ 30 }

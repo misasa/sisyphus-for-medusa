@@ -20,23 +20,23 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency('sinatra', "~> 1.4")
   spec.add_dependency('sinatra-contrib', "~> 1.4")
-  spec.add_dependency('haml', "~> 4.0")
+  spec.add_dependency('haml', ">= 5.0.0")
 #  spec.add_dependency('thin', "~> 1.6")  
 
   spec.add_dependency('medusa_rest_client', "~> 0.1")
 #  spec.add_dependency('tepra', "0.0.3")
 
-  spec.add_development_dependency "bundler", "~> 1.3"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "rake", ">= 12.3.3"
   spec.add_development_dependency "rspec", "2.14"
-  spec.add_development_dependency "turnip", "~> 1.2"  
+#  spec.add_development_dependency "turnip", "~> 1.2"  
   spec.add_development_dependency "rack-test", "~> 0.0"
   spec.add_development_dependency "factory_girl", "~> 4.4"
   spec.add_development_dependency "fakeweb", "~> 1.3"
   spec.add_development_dependency "fakeweb-matcher", "~> 1.2"
-  
-  spec.add_development_dependency "spork", "~> 0.9"
+#  spec.add_development_dependency "google-protobuf"
+#  spec.add_development_dependency "spork", "~> 0.9"
   #spec.add_development_dependency "guard-rspec", "~> 4.3"
-  spec.add_development_dependency "simplecov-rcov", "~> 0.2.3"
-  spec.add_development_dependency "rspec_junit_formatter", "~> 0.2.0"    
+#  spec.add_development_dependency "simplecov-rcov", "~> 0.2.3"
+#  spec.add_development_dependency "rspec_junit_formatter", "~> 0.2.0"    
 end
