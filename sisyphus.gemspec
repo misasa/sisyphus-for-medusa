@@ -18,12 +18,12 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency('sinatra', "~> 1.4")
-  spec.add_dependency('sinatra-contrib', "~> 1.4")
+  spec.add_dependency('sinatra', "~> 2.1.0")
+  spec.add_dependency('sinatra-contrib', "~> 2.1.0")
   spec.add_dependency('haml', ">= 5.0.0")
 #  spec.add_dependency('thin', "~> 1.6")  
 
-  spec.add_dependency('medusa_rest_client', "~> 0.1")
+  spec.add_dependency('medusa_rest_client', "~> 0.2.0")
 #  spec.add_dependency('tepra', "0.0.3")
 
   spec.add_development_dependency "bundler"
