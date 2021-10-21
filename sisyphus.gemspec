@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('haml', ">= 5.0.0")
 #  spec.add_dependency('thin', "~> 1.6")  
 
-  spec.add_dependency('medusa_rest_client', "~> 0.2.0")
+  spec.add_dependency('medusa_rest_client', ">= 0.2.0")
 #  spec.add_dependency('tepra', "0.0.3")
 
   spec.add_development_dependency "bundler"
