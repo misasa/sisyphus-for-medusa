@@ -8,10 +8,11 @@ Gem::Specification.new do |spec|
   spec.version       = Sisyphus::VERSION
   spec.authors       = ["Yusuke Yachi"]
   spec.email         = ["yyachi@misasa.okayama-u.ac.jp"]
-  spec.summary       = %q{GUI client application for Medusa.}
-  spec.description   = %q{This is a GUI client application for Medusa.}
-  spec.homepage      = ""
-  spec.license       = "MIT"
+  spec.summary       = "Browser-based client for Medusa"
+  spec.description   = "Create specimen records in Medusa and print barcode labels through a Windows print service."
+  spec.homepage      = "https://github.com/misasa/sisyphus-for-medusa"
+  spec.license       = "GPL-3.0-or-later"
+  spec.required_ruby_version = ">= 2.5.0"
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
@@ -21,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('sinatra', "~> 2.1.0")
   spec.add_dependency('sinatra-contrib', "~> 2.1.0")
   spec.add_dependency('haml', ">= 5.0.0")
+  spec.add_dependency('webrick')
 #  spec.add_dependency('thin', "~> 1.6")  
 
   spec.add_dependency('medusa_rest_client', "~> 1.0")
