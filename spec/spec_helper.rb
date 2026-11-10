@@ -14,7 +14,6 @@ require 'rubygems'
   # need to restart spork for it take effect.
 #  require 'rspec'
 #  require 'turnip'
-  require 'factory_bot'
   require 'fakeweb'
   require 'fakeweb_matcher'
   require 'sinatra'
@@ -23,8 +22,6 @@ require 'rubygems'
 
   require 'medusa_rest_client'
 #  require 'tepra'
-
-  FactoryBot.find_definitions
 
 #end
 
