@@ -7,9 +7,6 @@ require 'medusa_rest_client'
 
 module Sisyphus
 	describe Server do
-		before do
-			#FactoryGirl.clean_registry
-		end
 		include Rack::Test::Methods
 
 		def app
@@ -31,8 +28,8 @@ module Sisyphus
 			end
 
 			context "with params", :current => true do
-				let(:stone_obj){ FactoryGirl.build(:stone, stone_param.merge("global_id" => stone_gid)) }
-				let(:file_obj){ FactoryGirl.build(:attachment_file,file_param.merge("global_id" => '0000-002')) }
+				let(:stone_obj){ FactoryBot.build(:stone, stone_param.merge("global_id" => stone_gid)) }
+				let(:file_obj){ FactoryBot.build(:attachment_file,file_param.merge("global_id" => '0000-002')) }
 				let(:params){{"stone" => stone_param, "file" => post_file}}
 				let(:stone_param){ { "name" => name } }
 				let(:file_param){ { "name" => filename }}

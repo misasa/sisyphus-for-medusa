@@ -25,6 +25,10 @@ jobs:
           - ruby: '2.7.8'
             bundler: '2.4.22'
             rubygems: '3.4.22'
+          - ruby: '3.2'
+          - ruby: '3.3'
+          - ruby: '3.4'
+          - ruby: '4.0'
     steps:
       - uses: actions/checkout@v6
         with:
