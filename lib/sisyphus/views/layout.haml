@@ -9,8 +9,8 @@
     %link(rel='stylesheet' href='vendor/css/bootstrap.min.css')
     %link(rel='stylesheet' href='vendor/css/bootstrap-responsive.mim.css')
   %body
-    %div= haml :navbar
-    %div= yield
+    %div!= haml :navbar
+    %div!= yield
     %script{:src => 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'}
     %script{:src => 'vendor/js/bootstrap.min.js'}        
     %script{:src => 'js/bootstrap-filestyle.min.js', :type => 'text/javascript'}

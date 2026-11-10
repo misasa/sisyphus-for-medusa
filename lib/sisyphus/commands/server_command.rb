@@ -3,7 +3,7 @@ require 'sisyphus/server'
 
 class Sisyphus::Commands::ServerCommand < Sisyphus::Command
 	def initialize
-		super '', 'Sisyphus HTTP server', :port => 8890, :bind => '0.0.0.0', :title => 'Sisyphus', :print_timeout => 10
+		super '', 'Start the Sisyphus web server', :port => 8890, :bind => '0.0.0.0', :title => 'Sisyphus', :print_timeout => 10
 
 		OptionParser.accept :Port do |port|
 			if port =~ /\A\d+\z/ then
@@ -20,15 +20,15 @@ class Sisyphus::Commands::ServerCommand < Sisyphus::Command
 			end
 		end
 
-		add_option '-p', '--port=PORT', :Port, 'port to listen to' do |port, options|
+		add_option '-p', '--port=PORT', :Port, 'Set the HTTP port (default: 8890)' do |port, options|
 			options[:port] = port
 		end
 
-		add_option '-t', '--title=TITLE', 'title of application' do |title, options|
+		add_option '-t', '--title=TITLE', 'Set the title shown in the web interface' do |title, options|
 			options[:title] = title
 		end
 
-		add_option '-o', '--print-timeout=TIME', 'timeout on printing' do |time, options|
+		add_option '-o', '--print-timeout=TIME', 'Set the legacy print timeout value' do |time, options|
 			options[:print_timeout] = time.to_i
 		end
 
@@ -39,20 +39,26 @@ class Sisyphus::Commands::ServerCommand < Sisyphus::Command
 
 	end
 
-def description
+	def description
 		<<-EOF
-Create stone in Medusa and print barcode label on MS-Windows.  This is
-a web-app that runs on PC.  By accessing the server by web browser
-that runs remotely or locally, an user can create a stone with label.
+Use Sisyphus to create specimen records in Medusa and print barcode
+labels from a browser on this computer or another computer on the
+network. By default, the web interface is at http://localhost:8890 on
+the computer running Sisyphus.
 
-Synopsis:
-    CMD> sisyphus
+Barcode labels are sent to a Windows print service on the computer
+running Sisyphus. The current HTTP print request ignores the legacy
+--print-timeout setting.
 
-See Also:
+Examples:
+    sisyphus
+    sisyphus --port=8891 --title="Medusa specimens"
+
+See also:
     http://dream.misasa.okayama-u.ac.jp
 
 History:
-    August 11, 2018: Add documentation by TK.
+    August 11, 2018: TK added the documentation.
 
 Implementation:
     Copyright (C) 2015-2020 Okayama University

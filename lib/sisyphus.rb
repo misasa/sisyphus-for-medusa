@@ -1,3 +1,5 @@
+require "net/http"
+require "uri"
 require "sisyphus/version"
 
 module Sisyphus
@@ -22,10 +24,9 @@ module Sisyphus
   end
 
   def self.print(obj)
-    #label_string = "#{obj.global_id},\"#{obj.name}\""
-    #Tepra.print(label_string, :timeout => Sisyphus.print_timeout)
-    uri = URI.parse("http://localhost:8889/Format/Print?UID=#{obj.global_id}&NAME=#{obj.name}")
-    res = Net::HTTP.get_response(uri)
+    query = URI.encode_www_form({ "UID" => obj.global_id, "NAME" => obj.name }, Encoding::UTF_8)
+    uri = URI.parse("http://localhost:8889/Format/Print?#{query}")
+    Net::HTTP.get_response(uri)
   end
 
   @title = nil
@@ -39,7 +40,7 @@ module Sisyphus
   end
 
   def self.title=(title)
-  	@title = title
+    @title = title.is_a?(String) ? title.encode(Encoding::UTF_8) : title
   end
 
   def self.open_command

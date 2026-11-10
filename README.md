@@ -1,41 +1,62 @@
-# gem package -- sisyphus-for-medusa
+# Sisyphus for Medusa
 
-Create a stone in Medusa and print barcode label on MS-Windows.
+Sisyphus is a browser-based client for Medusa. Use it to create specimen
+records and print barcode labels through a Windows print service. For
+Android, see [Sisyphus for Android](https://github.com/misasa/sisyphus).
 
-# Description
+## Requirements
 
-Create stone in Medusa and print barcode label on MS-Windows.  This is Web App 
-that runs on PC.  User creates a stone with label by one action using web browser
-as one does it using [Sisyphus for android](https://github.com/misasa/sisyphus). 
+- Ruby 2.5 or later and the
+  [medusa_rest_client gem](https://github.com/misasa/medusa_rest_client)
+- Access to a Medusa server
+- A Windows print service on port 8889 on the computer running Sisyphus
+  for barcode printing
 
-# Dependency
+## Installation
 
-Ruby 2.5, 2.6, or, 2.7.
+```sh
+gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems/
+gem install sisyphus-for-medusa
+```
 
-## [gem package -- medusa_rest_client](https://github.com/misasa/medusa_rest_client)
+## Usage
 
-## [gem package -- tepra](https://github.com/misasa/tepra)
+```sh
+sisyphus
+sisyphus --help
+```
 
+The web interface is available at http://localhost:8890 on the computer
+running Sisyphus. Use `--port` to change the HTTP port and `--title` to
+set the title shown in the browser.
 
+## Test and build
 
+Run the application specs with `bundle install` and `bundle exec rspec`.
+Build the gem and verify its installed command from the repository root.
 
-# Installation
+```sh
+mkdir -p pkg
+archive="pkg/$(ruby -r ./lib/sisyphus/version -e 'puts "sisyphus-for-medusa-#{Sisyphus::VERSION}.gem"')"
+gem build sisyphus.gemspec --strict --output "$archive"
+ruby script/verify_package.rb "$archive"
+```
 
-Install this package by yourself as:
+The package check uses the runtime gems already available to the selected
+Ruby. It installs the archive in a temporary directory, checks the CLI help
+and HTTP server handler, and renders the specimen form through Rack.
 
-    $ gem source -a http://dream.misasa.okayama-u.ac.jp/rubygems/
-    $ gem install sisyphus-for-medusa
+## Build on GitHub from a tag
 
-# Commands
+On a commit that includes the build workflow, create and push a new tag
+matching the gem version.
 
-Commands are summarized as:
+```sh
+tag=$(ruby -r ./lib/sisyphus/version -e 'print "v#{Sisyphus::VERSION}"')
+git tag "$tag"
+git push origin "refs/tags/$tag"
+```
 
-| command          | description                                   | note                       |
-|------------------|-----------------------------------------------|----------------------------|
-| sisyphus         | Sisyphus HTTP server                          |                            |
-
-# Usage
-
-See online document:
-
-    $ sisyphus --help
+Open the **Build tagged gem** run in GitHub Actions and download
+`sisyphus-for-medusa-gem` from **Artifacts**. The artifact contains the
+verified `.gem` file.

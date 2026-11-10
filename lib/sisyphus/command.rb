@@ -22,7 +22,7 @@ class Sisyphus::Command
 	def initialize(command, summary=nil, defaults={})
 		@command = command
 		@summary = summary
-		@program_name = "sisyphus #{command}"
+		@program_name = "sisyphus #{command}".rstrip
 		@defaults = defaults
 		@options = defaults.dup
 		@option_groups = Hash.new { |h,k| h[k] = []}
@@ -168,7 +168,7 @@ class Sisyphus::Command
 		end
 	end
 
-	add_common_option('-h', '--help', 'Get help on this command') do |value, options|
+	add_common_option('-h', '--help', 'Show this help message') do |value, options|
 		options[:help] = true
 	end
 
