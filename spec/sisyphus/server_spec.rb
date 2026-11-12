@@ -7,9 +7,6 @@ require 'medusa_rest_client'
 
 module Sisyphus
 	describe Server do
-		before do
-			#FactoryGirl.clean_registry
-		end
 		include Rack::Test::Methods
 
 		def app
@@ -31,8 +28,8 @@ module Sisyphus
 			end
 
 			context "with params", :current => true do
-				let(:stone_obj){ FactoryGirl.build(:stone, stone_param.merge("global_id" => stone_gid)) }
-				let(:file_obj){ FactoryGirl.build(:attachment_file,file_param.merge("global_id" => '0000-002')) }
+				let(:stone_obj){ MedusaRestClient::Stone.new(stone_param.merge("global_id" => stone_gid)) }
+				let(:file_obj){ MedusaRestClient::AttachmentFile.new(file_param.merge("global_id" => '0000-002')) }
 				let(:params){{"stone" => stone_param, "file" => post_file}}
 				let(:stone_param){ { "name" => name } }
 				let(:file_param){ { "name" => filename }}
@@ -50,8 +47,7 @@ module Sisyphus
 					allow(MedusaRestClient::Specimen).to receive(:new).and_return(stone_obj)
 					stone_obj.stub(:save).and_return(true)
 					stone_obj.stub(:upload_file).and_return(file_obj)
-					Tepra = double("Tepra")
-					allow(Tepra).to receive(:print).and_return(1)
+					allow(Sisyphus).to receive(:print)
 				end
 
 				def do_post

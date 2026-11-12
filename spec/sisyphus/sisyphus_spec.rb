@@ -3,7 +3,7 @@ require 'spec_helper'
 module Sisyphus
 	describe ".print" do
 		subject {Sisyphus.print(obj) }
-		let(:obj){ FactoryGirl.build(:stone, {"global_id" => stone_gid, "name" => stone_name}) }
+		let(:obj){ MedusaRestClient::Stone.new("global_id" => stone_gid, "name" => stone_name) }
 		let(:stone_gid){ '0000-0012'}
 		let(:stone_name){ 'deleteme-stone'}
 		let(:uri){ double(:uri) }
