@@ -3,6 +3,7 @@ name: Ruby
 on:
   push:
     branches: [master]
+    tags: ['v*']
   pull_request:
     branches: [master]
 
@@ -43,3 +44,118 @@ jobs:
         run: bundle install
       - name: Run tests
         run: bundle exec rspec
+      - name: Check download script syntax
+        run: bash -n script/download_release.sh
+
+  package:
+    name: Build gem
+    needs: test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.9'
+          rubygems: '4.0.23'
+      - name: Build the gem
+        id: build
+        run: |
+          set -euo pipefail
+          filename="$(ruby -e 'puts Gem::Specification.load("sisyphus.gemspec").file_name')"
+          mkdir -p pkg
+          gem build sisyphus.gemspec --strict --output "pkg/$filename"
+          printf 'path=pkg/%s\n' "$filename" >> "$GITHUB_OUTPUT"
+      - name: Check out the Medusa client
+        uses: actions/checkout@v6
+        with:
+          repository: misasa/medusa_rest_client
+          ref: refs/tags/1.5.2
+          path: vendor/medusa_rest_client
+          persist-credentials: false
+      - name: Install the Medusa client
+        working-directory: vendor/medusa_rest_client
+        run: |
+          gem build medusa_rest_client.gemspec --output "$RUNNER_TEMP/medusa_rest_client.gem"
+          gem install --no-document "$RUNNER_TEMP/medusa_rest_client.gem"
+      - name: Verify the installed gem
+        env:
+          GEM_ARCHIVE: ${{ steps.build.outputs.path }}
+        run: |
+          gem install --no-document --conservative "$GEM_ARCHIVE"
+          ruby script/verify_package.rb "$GEM_ARCHIVE"
+      - name: Upload the gem
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: sisyphus-for-medusa-gem
+          path: ${{ steps.build.outputs.path }}
+          if-no-files-found: error
+
+  release:
+    name: Publish verified gem
+    needs: package
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    concurrency:
+      group: sisyphus-for-medusa-release-${{ github.ref }}
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.9'
+          rubygems: '4.0.23'
+          bundler: 'none'
+      - name: Check master ancestry, tag, version and existing releases
+        id: package
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/master:refs/remotes/origin/master' --tags
+          gh api --paginate --slurp "repos/$GH_REPO/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          filename="$(ruby script/verify_release.rb "$RELEASE_TAG" "$GITHUB_SHA" "$RUNNER_TEMP/releases.json")"
+          printf 'filename=%s\n' "$filename" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v8
+        with:
+          name: sisyphus-for-medusa-gem
+          path: pkg
+      - name: Generate SHA-256 manifest
+        env:
+          GEM_FILENAME: ${{ steps.package.outputs.filename }}
+        run: |
+          set -euo pipefail
+          ruby -rrubygems/package -e '
+            package = Gem::Package.new(ARGV.fetch(0))
+            package.verify
+            abort "Archive filename mismatch" unless package.spec.file_name == File.basename(ARGV.fetch(0))
+            abort "Archive tag mismatch" unless ENV.fetch("RELEASE_TAG") == "v#{package.spec.version}"
+          ' "pkg/$GEM_FILENAME"
+          (cd pkg && sha256sum "$GEM_FILENAME" > "$GEM_FILENAME.sha256")
+      - name: Upload draft, verify uploaded bytes, then publish
+        env:
+          GEM_FILENAME: ${{ steps.package.outputs.filename }}
+        run: |
+          set -euo pipefail
+          gh api --paginate --slurp "repos/$GH_REPO/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          ruby script/verify_release.rb "$RELEASE_TAG" "$GITHUB_SHA" "$RUNNER_TEMP/releases.json"
+          gh release create "$RELEASE_TAG" \
+            "pkg/$GEM_FILENAME" "pkg/$GEM_FILENAME.sha256" \
+            --verify-tag --draft --title "$RELEASE_TAG" \
+            --notes "Tested on Ruby 2.5.9, 2.6.10, 2.7.8, 3.2, 3.3, 3.4 and 4.0. Download the gem and SHA-256 manifest below."
+          uploaded="$(mktemp -d)"
+          gh release download "$RELEASE_TAG" --dir "$uploaded" \
+            --pattern "$GEM_FILENAME" --pattern "$GEM_FILENAME.sha256"
+          cmp "pkg/$GEM_FILENAME" "$uploaded/$GEM_FILENAME"
+          cmp "pkg/$GEM_FILENAME.sha256" "$uploaded/$GEM_FILENAME.sha256"
+          (cd "$uploaded" && sha256sum --check "$GEM_FILENAME.sha256")
+          gh release edit "$RELEASE_TAG" --draft=false
+          printf 'Published `%s` with SHA-256 checksum.\n' "$GEM_FILENAME" >> "$GITHUB_STEP_SUMMARY"
