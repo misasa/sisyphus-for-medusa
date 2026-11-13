@@ -13,6 +13,16 @@ module Sisyphus
 			Sisyphus::Server
 		end
 
+		it 'renders the specimen form without template adapter warnings' do
+			expect { get '/' }.not_to output.to_stderr
+			expect(last_response).to be_ok
+			expect(last_response.body).to match(/<nav\b/)
+			expect(last_response.body).to match(/<form\b/)
+			expect(last_response.body).to include('stone[name]')
+			expect(last_response.body).to match(/type=['"]file['"]/)
+			expect(last_response.body).not_to match(/&lt;(nav|form)\b/)
+		end
+
 		describe "post '/'" do
 
 			context "without params" do
