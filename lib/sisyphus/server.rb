@@ -2,6 +2,8 @@ module Sisyphus
 	require 'sisyphus'
 	require 'sinatra/base'
 	require 'sinatra/reloader'
+	# Let Haml register its own Tilt adapter before Sinatra renders a view.
+	require 'haml'
 	require 'medusa_rest_client'
 #	require 'tepra'
 	MedusaRestClient::Base.init
